@@ -22,11 +22,11 @@ February 2024 <br>
 
 ## R libraries
 - <code>plotrix</code>
-- <code>boot)</code>
-- <code>tmvnsim)</code>
-- <code>wCorr)</code>
-- <code>truncnorm)</code>
-- <code>orcutt)</code>
-- <code>lmtest)</code>
+- <code>boot</code>
+- <code>tmvnsim</code>
+- <code>wCorr</code>
+- <code>truncnorm</code>
+- <code>orcutt</code>
+- <code>lmtest</code>
 
 <p><a href="https://www.flinders.edu.au"><img align="bottom-left" src="www/Flinders_University_Logo_Horizontal_RGB_Master.png" alt="Flinders University" width="150" style="margin-top: 20px"></a> &nbsp; <a href="https://globalecologyflinders.com"><img align="bottom-left" src="www/GEL Logo Kaurna New Transp.png" alt="GEL" width="85" style="margin-top: 20px"></a> &nbsp; &nbsp; <a href="https://www.uwa.edu.au/"><img align="bottom-left" src="www/uwa2.png" alt="UWA" width="100" style="margin-top: 20px"></a> &nbsp; &nbsp; <a href="https://www.telethonkids.org.au"><img align="bottom-left" src="www/tkilogo.png" alt="TKI" width="90" style="margin-top: 20px"></a>
