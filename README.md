@@ -1,4 +1,5 @@
 # Global human population switch from depensation to compensation
+<img align="right" src="www/pop.png" alt="population icon" width="150" style="margin-top: 20px">
 
 The global human population switched from density enhancement to limitation in the 1950s
 
