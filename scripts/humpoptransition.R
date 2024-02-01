@@ -106,7 +106,7 @@ colnames(hpop.out) <- c("year", "popMD", "popUP", "popLO")
 head(hpop.out)
 
 ## UN population
-## https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1
+## data.un.org/Data.aspx?d=POP&f=tableCode%3a1
 UNpop <- read.csv('UNpop.csv', sep=",", header=T)
 head(UNpop)
 UNtot <- subset(UNpop, Area=="Total" & Sex=="Both Sexes")
@@ -200,7 +200,7 @@ k <- as.numeric(-coef(fitlin)[1]/coef(fitlin)[2])
 round(k/10^9, 4)
 
 
-# N children 0-1 1950-2021 (United Nations Populatin Division)
+# N children 0-1 1950-2021 (United Nations Population Division)
 N01obs <- read.csv("Nchild0-1.csv", header=T)
 head(N01obs)
 
