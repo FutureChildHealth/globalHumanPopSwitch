@@ -362,6 +362,35 @@ ESEA.rick <- lm(ESEA.use$r ~ ESEA.use$Nsc)
 abline(ESEA.rick, lty=2, col="red")
 summary(ESEA.rick)
 
+# EAST AND SOUTH-EASTERN ASIA EXCLUDING CHINA
+china <- read.csv("china1950-2021.csv", header=T)
+head(china)
+ESEAexclCHN <- ESEA
+head(ESEAexclCHN)
+ESEAexclCHN$ESEA <- ESEA$ESEA - china$N
+ESEAexclCHN$Nsc <- as.numeric(scale(ESEAexclCHN[,2], scale=T, center=F))
+ESEAexclCHN$r <- c(log(ESEAexclCHN$Nsc[2:dim(popreg)[1]] / ESEAexclCHN$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(ESEAexclCHN)
+plot(ESEAexclCHN$Nsc, ESEAexclCHN$r, xlab="N", ylab="r", pch=19)
+ESEAexclCHN.use <- ESEAexclCHN[which(ESEAexclCHN$year >= 1958),]
+plot(ESEAexclCHN.use$Nsc, ESEAexclCHN.use$r, xlab="N", ylab="r", pch=19)
+ESEAexclCHN.rick <- lm(ESEAexclCHN.use$r ~ ESEAexclCHN.use$Nsc)
+abline(ESEAexclCHN.rick, lty=2, col="red")
+summary(ESEAexclCHN.rick)
+
+# CHINA
+CHN <- china
+head(china)
+CHN$Nsc <- as.numeric(scale(CHN[,2], scale=T, center=F))
+CHN$r <- c(log(CHN$Nsc[2:dim(popreg)[1]] / CHN$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(CHN)
+plot(CHN$Nsc, CHN$r, xlab="N", ylab="r", pch=19)
+CHN.use <- CHN[which(CHN$year >= 1962),]
+plot(CHN.use$Nsc, CHN.use$r, xlab="N", ylab="r", pch=19)
+CHN.rick <- lm(CHN.use$r ~ CHN.use$Nsc)
+abline(CHN.rick, lty=2, col="red")
+summary(CHN.rick)
+
 # LATIN AMERICA AND CARIBBEAN
 head(popreg)
 LAC <- popreg[,c(1,10)]
