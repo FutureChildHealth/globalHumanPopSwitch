@@ -10,6 +10,13 @@ February 2024 <br>
 <a href=mailto:corey.bradshaw@flinders.edu.au>e-mail</a> <br>
 <br>
 
+Accompanies paper:<br>
+<br>
+Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, LJZ Weeda, PN Le Souëf. Global human population switched from depensation to compensation in the 1950s.
+
+## Abstract
+Applied to human populations, the ecological concept of carrying capacity is necessarily complicated because human beings are the "ultimate ecosystem engineers" who deliberately and successfully moderate their environment for their benefit. For at least that last few hundred years, human ingenuity and technological development have driven depensatory population dynamics whereby increasing human abundance facilitated higher population growth rates. However, this positive relationship broke down during the 1950s, and by 1962, the global human population entered a compensation phase where the growth rate consistently declined as population increased. The onset of compensation was approximately contemporaneous with a global biocapacity deficit that began in 1970 and has worsened ever since. The onset of compensation varies regionally, with the lowest-income regions entering compensation later than higher-income regions. A Ricker logistic model fitted to the compensation phase predicts a maximum global human carrying capacity of 11.55 to 12.26 billion between 2065 and 2074. The same model fitted to the depensation phase predicts an optimal carrying capacity of 2.5 billion people, in line with economics-based estimates of equitable wealth distribution. The compensation phase also correlates strongly with the trend in global temperature anomaly, demonstrating the environmental feedback emerging from the combination of population size and over-consumption. The Earth cannot sustain the future human population, or even today's, without a major overhaul of socio-cultural practices for using land, water, energy, biodiversity, and other resources. Future sustainable development must therefore meet the needs and aspirations of today's societies while simultaneously ensuring that future generations can meet their own.
+
 ## Scripts
 - <code>humanpoptransition.R</code> (main code)
 - <code>new_lmer_AIC_tables3.R</code> (source functions)
