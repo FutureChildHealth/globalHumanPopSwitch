@@ -1,4 +1,4 @@
-## Global human population switched from density enhancement to limitation in the 1950s
+## Global human population switched from depensation to compensation in the 1950s
 ## Corey Bradshaw
 ## Flinders University 
 ## February 2024
@@ -11,6 +11,44 @@ library(wCorr)
 library(truncnorm)
 library(orcutt)
 library(lmtest)
+library(performance)
+library(sjPlot)
+
+# source files
+source("new_lmer_AIC_tables3.R")
+source("r.squared.R")
+
+# functions
+AICc <- function(...) {
+  models <- list(...)
+  num.mod <- length(models)
+  AICcs <- numeric(num.mod)
+  ns <- numeric(num.mod)
+  ks <- numeric(num.mod)
+  AICc.vec <- rep(0,num.mod)
+  for (i in 1:num.mod) {
+    if (length(models[[i]]$df.residual) == 0) n <- models[[i]]$dims$N else n <- length(models[[i]]$residuals)
+    if (length(models[[i]]$df.residual) == 0) k <- sum(models[[i]]$dims$ncol) else k <- (length(models[[i]]$coeff))+1
+    AICcs[i] <- (-2*logLik(models[[i]])) + ((2*k*n)/(n-k-1))
+    ns[i] <- n
+    ks[i] <- k
+    AICc.vec[i] <- AICcs[i]
+  }
+  return(AICc.vec)
+}
+
+delta.IC <- function(x) x - min(x) ## where x is a vector of an IC
+weight.IC <- function(x) (exp(-0.5*x))/sum(exp(-0.5*x)) ## Where x is a vector of dIC
+ch.dev <- function(x) ((( as.numeric(x$null.deviance) - as.numeric(x$deviance) )/ as.numeric(x$null.deviance))*100) ## % change in deviance, where x is glm object
+
+linreg.ER <- function(x,y) { # where x and y are vectors of the same length; calls AICc, delta.AIC, weight.AIC functions
+  fit.full <- lm(y ~ x); fit.null <- lm(y ~ 1)
+  AIC.vec <- c(AICc(fit.full),AICc(fit.null))
+  dAIC.vec <- delta.IC(AIC.vec); wAIC.vec <- weight.IC(dAIC.vec)
+  ER <- wAIC.vec[1]/wAIC.vec[2]
+  r.sq.adj <- as.numeric(summary(fit.full)[9])
+  return(c(ER,r.sq.adj))
+}
 
 # functions
 # Hildreth-Lu (named for Clifford Hildreth and John Y. Lu, is a method for adjusting
@@ -63,38 +101,6 @@ NonSeqSample <- function(x, size, ord=1, replace) {
   return(vsmp)
 }
 
-AICc <- function(...) {
-  models <- list(...)
-  num.mod <- length(models)
-  AICcs <- numeric(num.mod)
-  ns <- numeric(num.mod)
-  ks <- numeric(num.mod)
-  AICc.vec <- rep(0,num.mod)
-  for (i in 1:num.mod) {
-    if (length(models[[i]]$df.residual) == 0) n <- models[[i]]$dims$N else n <- length(models[[i]]$residuals)
-    if (length(models[[i]]$df.residual) == 0) k <- sum(models[[i]]$dims$ncol) else k <- (length(models[[i]]$coeff))+1
-    AICcs[i] <- (-2*logLik(models[[i]])) + ((2*k*n)/(n-k-1))
-    ns[i] <- n
-    ks[i] <- k
-    AICc.vec[i] <- AICcs[i]
-  }
-  return(AICc.vec)
-}
-
-## functions
-delta.IC <- function(x) x - min(x) ## where x is a vector of an IC
-weight.IC <- function(x) (exp(-0.5*x))/sum(exp(-0.5*x)) ## Where x is a vector of dIC
-ch.dev <- function(x) ((( as.numeric(x$null.deviance) - as.numeric(x$deviance) )/ as.numeric(x$null.deviance))*100) ## % change in deviance, where x is glm object
-
-linreg.ER <- function(x,y) { # where x and y are vectors of the same length; calls AICc, delta.AIC, weight.AIC functions
-  fit.full <- lm(y ~ x); fit.null <- lm(y ~ 1)
-  AIC.vec <- c(AICc(fit.full),AICc(fit.null))
-  dAIC.vec <- delta.IC(AIC.vec); wAIC.vec <- weight.IC(dAIC.vec)
-  ER <- wAIC.vec[1]/wAIC.vec[2]
-  r.sq.adj <- as.numeric(summary(fit.full)[9])
-  return(c(ER,r.sq.adj))
-}
-
 ## Historical estimates of world population
 ## census.gov/data/tables/time-series/demo/international-programs/historical-est-worldpop.html
 hpop <- read.csv('Npre1950.csv', sep=",", header=T)
@@ -106,7 +112,7 @@ colnames(hpop.out) <- c("year", "popMD", "popUP", "popLO")
 head(hpop.out)
 
 ## UN population
-## data.un.org/Data.aspx?d=POP&f=tableCode%3a1
+## https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1
 UNpop <- read.csv('UNpop.csv', sep=",", header=T)
 head(UNpop)
 UNtot <- subset(UNpop, Area=="Total" & Sex=="Both Sexes")
@@ -327,6 +333,139 @@ SSA.rick <- lm(SSA.use$r ~ SSA.use$Nsc)
 abline(SSA.rick, lty=2, col="red")
 summary(SSA.rick)
 
+## top 10 countries with highest fertility
+# Niger
+NER <- read.csv("NER.csv", header=T)
+head(NER)
+NER$Nsc <- as.numeric(scale(NER[,2], scale=T, center=F))
+NER$r <- c(log(NER$Nsc[2:dim(popreg)[1]] / NER$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(NER)
+plot(NER$Nsc, NER$r, xlab="N", ylab="r", pch=19)
+NER.use <- NER[which(NER$year >= 2015),]
+plot(NER.use$Nsc, NER.use$r, xlab="N", ylab="r", pch=19)
+NER.rick <- lm(NER.use$r ~ NER.use$Nsc)
+abline(NER.rick, lty=2, col="red")
+summary(NER.rick)
+
+# Democratic Republic of Congo
+COD <- read.csv("COD.csv", header=T)
+head(COD)
+COD$Nsc <- as.numeric(scale(COD[,2], scale=T, center=F))
+COD$r <- c(log(COD$Nsc[2:dim(popreg)[1]] / COD$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(COD)
+plot(COD$Nsc, COD$r, xlab="N", ylab="r", pch=19)
+COD.use <- COD[which(COD$year >= 2013),]
+plot(COD.use$Nsc, COD.use$r, xlab="N", ylab="r", pch=19)
+COD.rick <- lm(COD.use$r ~ COD.use$Nsc)
+abline(COD.rick, lty=2, col="red")
+summary(COD.rick)
+
+# Mali
+MLI <- read.csv("MLI.csv", header=T)
+head(MLI)
+MLI$Nsc <- as.numeric(scale(MLI[,2], scale=T, center=F))
+MLI$r <- c(log(MLI$Nsc[2:dim(popreg)[1]] / MLI$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(MLI)
+plot(MLI$Nsc, MLI$r, xlab="N", ylab="r", pch=19)
+MLI.use <- MLI[which(MLI$year >= 2004),]
+plot(MLI.use$Nsc, MLI.use$r, xlab="N", ylab="r", pch=19)
+MLI.rick <- lm(MLI.use$r ~ MLI.use$Nsc)
+abline(MLI.rick, lty=2, col="red")
+summary(MLI.rick)
+
+# Chad
+TCD <- read.csv("TCD.csv", header=T)
+head(TCD)
+TCD$Nsc <- as.numeric(scale(TCD[,2], scale=T, center=F))
+TCD$r <- c(log(TCD$Nsc[2:dim(popreg)[1]] / TCD$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(TCD)
+plot(TCD$Nsc, TCD$r, xlab="N", ylab="r", pch=19)
+TCD.use <- TCD[which(TCD$year >= 2003),]
+plot(TCD.use$Nsc, TCD.use$r, xlab="N", ylab="r", pch=19)
+TCD.rick <- lm(TCD.use$r ~ TCD.use$Nsc)
+abline(TCD.rick, lty=2, col="red")
+summary(TCD.rick)
+
+# Angola
+AGO <- read.csv("AGO.csv", header=T)
+head(AGO)
+AGO$Nsc <- as.numeric(scale(AGO[,2], scale=T, center=F))
+AGO$r <- c(log(AGO$Nsc[2:dim(popreg)[1]] / AGO$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(AGO)
+plot(AGO$Nsc, AGO$r, xlab="N", ylab="r", pch=19)
+AGO.use <- AGO[which(AGO$year >= 2010),]
+plot(AGO.use$Nsc, AGO.use$r, xlab="N", ylab="r", pch=19)
+AGO.rick <- lm(AGO.use$r ~ AGO.use$Nsc)
+abline(AGO.rick, lty=2, col="red")
+summary(AGO.rick)
+
+# Nigeria
+NGA <- read.csv("NGA.csv", header=T)
+head(NGA)
+NGA$Nsc <- as.numeric(scale(NGA[,2], scale=T, center=F))
+NGA$r <- c(log(NGA$Nsc[2:dim(popreg)[1]] / NGA$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(NGA)
+plot(NGA$Nsc, NGA$r, xlab="N", ylab="r", pch=19)
+NGA.use <- NGA[which(NGA$year >= 2010),]
+plot(NGA.use$Nsc, NGA.use$r, xlab="N", ylab="r", pch=19)
+NGA.rick <- lm(NGA.use$r ~ NGA.use$Nsc)
+abline(NGA.rick, lty=2, col="red")
+summary(NGA.rick)
+
+# Burundi
+BDI <- read.csv("BDI.csv", header=T)
+head(BDI)
+BDI$Nsc <- as.numeric(scale(BDI[,2], scale=T, center=F))
+BDI$r <- c(log(BDI$Nsc[2:dim(popreg)[1]] / BDI$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(BDI)
+plot(BDI$Nsc, BDI$r, xlab="N", ylab="r", pch=19)
+BDI.use <- BDI[which(BDI$year >= 2008),]
+plot(BDI.use$Nsc, BDI.use$r, xlab="N", ylab="r", pch=19)
+BDI.rick <- lm(BDI.use$r ~ BDI.use$Nsc)
+abline(BDI.rick, lty=2, col="red")
+summary(BDI.rick)
+
+# Burkina Faso
+BFA <- read.csv("BFA.csv", header=T)
+head(BFA)
+BFA$Nsc <- as.numeric(scale(BFA[,2], scale=T, center=F))
+BFA$r <- c(log(BFA$Nsc[2:dim(popreg)[1]] / BFA$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(BFA)
+plot(BFA$Nsc, BFA$r, xlab="N", ylab="r", pch=19)
+BFA.use <- BFA[which(BFA$year >= 2003),]
+plot(BFA.use$Nsc, BFA.use$r, xlab="N", ylab="r", pch=19)
+BFA.rick <- lm(BFA.use$r ~ BFA.use$Nsc)
+abline(BFA.rick, lty=2, col="red")
+summary(BFA.rick)
+
+# Gambia
+GMB <- read.csv("GMB.csv", header=T)
+head(GMB)
+GMB$Nsc <- as.numeric(scale(GMB[,2], scale=T, center=F))
+GMB$r <- c(log(GMB$Nsc[2:dim(popreg)[1]] / GMB$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(GMB)
+plot(GMB$Nsc, GMB$r, xlab="N", ylab="r", pch=19)
+GMB.use <- GMB[which(GMB$year >= 2008),]
+plot(GMB.use$Nsc, GMB.use$r, xlab="N", ylab="r", pch=19)
+GMB.rick <- lm(GMB.use$r ~ GMB.use$Nsc)
+abline(GMB.rick, lty=2, col="red")
+summary(GMB.rick)
+
+# Uganda
+UGA <- read.csv("UGA.csv", header=T)
+head(UGA)
+UGA$Nsc <- as.numeric(scale(UGA[,2], scale=T, center=F))
+UGA$r <- c(log(UGA$Nsc[2:dim(popreg)[1]] / UGA$Nsc[1:(dim(popreg)[1]-1)]), NA)
+head(UGA)
+plot(UGA$Nsc, UGA$r, xlab="N", ylab="r", pch=19)
+UGA.use <- UGA[which(UGA$year >= 2016),]
+plot(UGA.use$Nsc, UGA.use$r, xlab="N", ylab="r", pch=19)
+UGA.rick <- lm(UGA.use$r ~ UGA.use$Nsc)
+abline(UGA.rick, lty=2, col="red")
+summary(UGA.rick)
+
+
+
 # NORTH AFRICA AND WESTERN ASIA
 NAWA <- popreg[,c(1,4)]
 NAWA$Nsc <- as.numeric(scale(NAWA[,2], scale=T, center=F))
@@ -438,3 +577,168 @@ SSAzero <- c(3726, 4984)
 
 sum(ESEAzero[1], EUNAzero[1], LACzero[1], CSAzero[1], OCzero[1], NAWAzero[1], SSAzero[1])
 sum(ESEAzero[2], EUNAzero[2], LACzero[2], CSAzero[2], OCzero[2], NAWAzero[2], SSAzero[2])
+
+
+########################################################################
+## linear models for examining contribution of per-capita consumption ##
+########################################################################
+
+## & population size to temperature anomaly
+# import data
+TAconN <- read.table("consump.csv", sep=",", header=T)
+head(TAconN)
+
+# plot
+par(mfrow=c(1,3))
+plot(TAconN$pcEconsum, TAconN$TaMED, pch=19, xlab="per-capita consumption", ylab="temperature anomaly")
+plot(TAconN$pop, TAconN$TaMED, pch=19, xlab="population size", ylab="temperature anomaly")
+plot(TAconN$pop, TAconN$pcEconsum, pch=19, xlab="population size", ylab="per-capita consumption")
+par(mfrow=c(1,1))
+
+# models
+mod1 <- "TaMED~pop+pcEconsum"
+mod2 <- "TaMED~pop"
+mod3 <- "TaMED~pcEconsum"
+mod4 <- "TaMED~1"
+
+## model vector
+mod.vec <- c(mod1,mod2,mod3,mod4)
+length(mod.vec)
+length(unique(mod.vec))
+
+## define n.mod
+n.mod <- length(mod.vec)
+
+# model fitting and logLik output loop
+Modnum <- length(mod.vec)
+LL.vec <- SaveCount <- AICc.vec <- BIC.vec <- k.vec <- terml <- Rm <- Rc <- rep(0,Modnum)
+mod.list <- summ.fit <- coeffs <- coeffs.se <- term.labs <- coeffs.st <- list()
+mod.num <- seq(1,Modnum,1)
+
+for(i in 1:Modnum) {
+  fit <- glm(as.formula(mod.vec[i]),family=gaussian(link="identity"), data=TAconN, na.action=na.omit)
+  assign(paste("fit",i,sep=""), fit)
+  mod.list[[i]] <- fit
+  print(i)
+}
+
+sumtable <- aicW(mod.list, finite = TRUE, null.model = NULL, order = F)
+row.names(sumtable) <- mod.vec
+summary.table <- sumtable[order(sumtable[,7],decreasing=F),1:9]
+summary.table
+
+## saturated residual diagnostic
+i <- 1
+fit.sat <- glm(as.formula(mod.vec[i]),family=gaussian(link="identity"), data=TAconN, na.action=na.omit)
+
+check_model(fit.sat, detrend=F)
+diagsat <- check_model(fit.sat, detrend=F)
+diagsat$VIF$x
+diagsat$VIF$y
+plot_model(fit.sat, show.values=T, vline.color = "purple")
+
+
+## resampling within temperature anomaly confidence interval
+iter <- 10000
+itdiv <- iter/10
+
+mod1 <- "Ta.it~pop+con"
+mod2 <- "Ta.it~pop"
+mod3 <- "Ta.it~con"
+mod4 <- "Ta.it~1"
+
+## model vector
+mod.vec <- c(mod1,mod2,mod3,mod4)
+
+topmod.vec <- wAICc.mod1.vec <- wAICc.mod2.vec <- wAICc.mod3.vec <- wAICc.mod4.vec <-
+  DE.mod1.vec <- DE.mod2.vec <- DE.mod3.vec <- DE.mod4.vec <- rep(NA,iter)
+
+for (j in 1:iter) {
+  Ta.it <- runif(dim(TAconN)[1],min=TAconN$TaLO, max=TAconN$TaUP)
+  TAconN.it1 <- data.frame(TAconN$pcEconsum, TAconN$pop, Ta.it)
+  colnames(TAconN.it1) <- c("con", "pop", "Ta.it")
+  
+  # resample iterated dataset with replacement
+  TAconN.it <- TAconN.it1[sample(1:30, replace=T), ]
+  
+  mod.list <- list()
+  for(i in 1:length(mod.vec)) {
+    fit <- glm(as.formula(mod.vec[i]),family=gaussian(link="identity"), data=TAconN.it, na.action=na.omit)
+    assign(paste("fit",i,sep=""), fit)
+    mod.list[[i]] <- fit
+  }
+  sumtable <- aicW(mod.list, finite = TRUE, null.model = NULL, order = F)
+  row.names(sumtable) <- mod.vec
+  summary.table <- sumtable[order(sumtable[,7],decreasing=F),1:9]
+  summary.table
+  
+  topmod.vec[j] <- which(mod.vec == row.names(summary.table)[1])
+                  
+  wAICc.mod1.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[1]),5]
+  wAICc.mod2.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[2]),5]
+  wAICc.mod3.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[3]),5]
+  wAICc.mod4.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[4]),5]
+  
+  DE.mod1.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[1]),9]
+  DE.mod2.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[2]),9]
+  DE.mod3.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[3]),9]
+  DE.mod4.vec[j] <- summary.table[which(row.names(summary.table) == mod.vec[4]),9]
+  
+  if (j %% itdiv==0) print(j) 
+  
+} # end j
+
+topmod.header <- mod.vec[as.numeric(attr(table(topmod.vec), "names"))]
+topmod.table <- as.data.frame(table(topmod.vec)/iter)
+topmod.table[,1] <- topmod.header
+colnames(topmod.table) <- c("model", "%top")
+topmod.table
+
+mod1.AICmed <- median(wAICc.mod1.vec, na.rm=T)
+mod2.AICmed <- median(wAICc.mod2.vec, na.rm=T)
+mod3.AICmed <- median(wAICc.mod3.vec, na.rm=T)
+mod4.AICmed <- median(wAICc.mod4.vec, na.rm=T)
+
+mod1.AIClo <- quantile(wAICc.mod1.vec, probs=0.025, na.rm=T)
+mod2.AIClo <- quantile(wAICc.mod2.vec, probs=0.025, na.rm=T)
+mod3.AIClo <- quantile(wAICc.mod3.vec, probs=0.025, na.rm=T)
+mod4.AIClo <- quantile(wAICc.mod4.vec, probs=0.025, na.rm=T)
+
+mod1.AICup <- quantile(wAICc.mod1.vec, probs=0.975, na.rm=T)
+mod2.AICup <- quantile(wAICc.mod2.vec, probs=0.975, na.rm=T)
+mod3.AICup <- quantile(wAICc.mod3.vec, probs=0.975, na.rm=T)
+mod4.AICup <- quantile(wAICc.mod4.vec, probs=0.975, na.rm=T)
+
+mod1.AICmed.st <- mod1.AICmed/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod2.AICmed.st <- mod2.AICmed/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod3.AICmed.st <- mod3.AICmed/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod4.AICmed.st <- mod4.AICmed/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+AICmed.st.vec <- c(mod1.AICmed.st,mod2.AICmed.st,mod3.AICmed.st,mod4.AICmed.st)
+
+mod1.AIClo.st <- mod1.AIClo/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod2.AIClo.st <- mod2.AIClo/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod3.AIClo.st <- mod3.AIClo/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod4.AIClo.st <- mod4.AIClo/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+AIClo.st.vec <- c(mod1.AIClo.st,mod2.AIClo.st,mod3.AIClo.st,mod4.AIClo.st)
+
+mod1.AICup.st <- mod1.AICup/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod2.AICup.st <- mod2.AICup/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod3.AICup.st <- mod3.AICup/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+mod4.AICup.st <- mod4.AICup/sum(c(mod1.AICmed, mod2.AICmed, mod3.AICmed, mod4.AICmed))
+AICup.st.vec <- c(mod1.AICup.st,mod2.AICup.st,mod3.AICup.st,mod4.AICup.st)
+
+topmod.index <- c(which(topmod.table$model == mod.vec[1]),which(topmod.table$model == mod.vec[2]),
+                  which(topmod.table$model == mod.vec[3]))
+topmod.table$AICmdst <- round(AICmed.st.vec[topmod.index],4)
+topmod.table$AIClost <- round(AIClo.st.vec[topmod.index],4)
+topmod.table$AICupst <- round(AICup.st.vec[topmod.index],4)
+
+mod1.DEmed <- median(DE.mod1.vec, na.rm=T)
+mod2.DEmed <- median(DE.mod2.vec, na.rm=T)
+mod3.DEmed <- median(DE.mod3.vec, na.rm=T)
+mod4.DEmed <- median(DE.mod4.vec, na.rm=T)
+DEmed.st.vec <- c(mod1.DEmed,mod2.DEmed,mod3.DEmed,mod4.DEmed)
+
+topmod.table$DEmdst <- round(DEmed.st.vec[topmod.index], 1)
+topmod.sort <- topmod.table[order(topmod.table[,2],decreasing=T),]
+topmod.sort
