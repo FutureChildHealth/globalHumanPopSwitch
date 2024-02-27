@@ -1,4 +1,4 @@
-## Global human population switched from depensation to compensation in the 1950s
+## Global human population ended self-facilitation in the 1950s
 ## Corey Bradshaw
 ## Flinders University 
 ## February 2024
@@ -13,6 +13,8 @@ library(orcutt)
 library(lmtest)
 library(performance)
 library(sjPlot)
+library(dismo)
+library(gbm)
 
 # source files
 source("new_lmer_AIC_tables3.R")
@@ -742,3 +744,167 @@ DEmed.st.vec <- c(mod1.DEmed,mod2.DEmed,mod3.DEmed,mod4.DEmed)
 topmod.table$DEmdst <- round(DEmed.st.vec[topmod.index], 1)
 topmod.sort <- topmod.table[order(topmod.table[,2],decreasing=T),]
 topmod.sort
+
+## boosted regression tree (median TA)
+brt.fit <- gbm.step(TAconN, gbm.x = attr(TAconN, "names")[c(2:3)], gbm.y = attr(TAconN, "names")[3],
+                    family="gaussian", max.trees=100000, tolerance = 0.0001, learning.rate = 0.0001,
+                    bag.fraction=0.75, tree.complexity = 2)
+summary(brt.fit)
+D2 <- 100 * (brt.fit$cv.statistics$deviance.mean - brt.fit$self.statistics$mean.resid) / brt.fit$cv.statistics$deviance.mean
+gbm.plot(brt.fit)
+gbm.plot.fits(brt.fit)
+
+brt.CV.cor <- 100 * brt.fit$cv.statistics$correlation.mean
+brt.CV.cor.se <- 100 * brt.fit$cv.statistics$correlation.se
+print(c(brt.CV.cor, brt.CV.cor.se))
+
+
+# resampled BRT loop
+biter <- 1000
+eq.sp.points <- 100
+
+# create storage arrays
+val.arr <- pred.arr <- array(data = NA, dim = c(eq.sp.points, 2, biter),
+                             dimnames=list(paste("x",1:eq.sp.points,sep=""),
+                             attr(TAconN, "names")[c(2:3)], paste("b",1:biter,sep="")))
+
+# create storage vectors
+D2.vec <- CV.cor.vec <- CV.cor.se.vec <- N.ri <- E.ri <- rep(NA,biter)
+
+for (b in 1:biter) {
+  # resample data among years
+  resamp.sub <- sort(sample(x = 1:dim(TAconN)[1], size = dim(TAconN)[1], replace=TRUE))
+  dat.resamp <- TAconN[resamp.sub,]
+  dat.resamp$TA.resamp <- runif(dim(dat.resamp)[1],min=dat.resamp$TaLO, max=dat.resamp$TaUP)
+  
+  # boosted regression tree
+  brt.fit <- gbm.step(dat.resamp, gbm.x = attr(dat.resamp, "names")[c(2:3)], gbm.y = attr(dat.resamp, "names")[8],
+                      family="gaussian", max.trees=100000, tolerance = 0.0001, learning.rate = 0.001, bag.fraction=0.75,
+                      tree.complexity = 2, silent=T, tolerance.method = "auto")
+  summ.fit <- summary(brt.fit)
+  
+  length(summ.fit[[1]])
+  
+  if (length(summ.fit[[1]]) == 2) {
+    # variable relative importance
+    E.ri[b] <- summ.fit$rel.inf[which(summ.fit$var == attr(dat.resamp, "names")[c(2:3)][1])]
+    N.ri[b] <- summ.fit$rel.inf[which(summ.fit$var == attr(dat.resamp, "names")[c(2:3)][2])]
+
+    D2 <- 100 * (brt.fit$cv.statistics$deviance.mean - brt.fit$self.statistics$mean.resid) /
+                brt.fit$cv.statistics$deviance.mean
+    D2.vec[b] <- D2
+    CV.cor <- 100 * brt.fit$cv.statistics$correlation.mean
+    CV.cor.vec[b] <- CV.cor
+    CV.cor.se <- 100 *brt.fit$cv.statistics$correlation.se
+    CV.cor.se.vec[b] <- CV.cor.se
+    
+    RESP.val <- RESP.pred <- matrix(data=NA, nrow=eq.sp.points, ncol=2)
+    ## output average predictions
+    for (p in 1:2) {
+      RESP.val[,p] <- plot.gbm(brt.fit, i.var=p, continuous.resolution=eq.sp.points, return.grid=T)[,1]
+      RESP.pred[,p] <- plot.gbm(brt.fit, i.var=p, continuous.resolution=eq.sp.points, return.grid=T)[,2]
+    }
+    RESP.val.dat <- as.data.frame(RESP.val)
+    colnames(RESP.val.dat) <- brt.fit$var.names
+    RESP.pred.dat <- as.data.frame(RESP.pred)
+    colnames(RESP.pred.dat) <- brt.fit$var.names
+    
+    val.arr[, , b] <- as.matrix(RESP.val.dat)
+    pred.arr[, , b] <- as.matrix(RESP.pred.dat)
+    
+    print(b)
+  }
+  
+  if (length(summ.fit[[1]]) != 2) {
+    b <- b+1
+    print(b)
+  }
+  
+} # end b
+
+# kappa method to reduce effects of outliers on bootstrap estimates
+kappa <- 2
+kappa.n <- 5
+pred.update <- pred.arr[,,1:biter]
+
+for (k in 1:kappa.n) {
+  boot.mean <- apply(pred.update, MARGIN=c(1,2), mean, na.rm=T)
+  boot.sd <- apply(pred.update, MARGIN=c(1,2), sd, na.rm=T)
+  
+  for (z in 1:biter) {
+    pred.update[,,z] <- ifelse((pred.update[,,z] < (boot.mean-kappa*boot.sd) | 
+                                  pred.update[,,z] > (boot.mean+kappa*boot.sd)), NA, pred.update[,,z])
+  }
+  print(k)
+}
+
+pred.med <- apply(pred.update, MARGIN=c(1,2), median, na.rm=T)
+pred.lo <- apply(pred.update, MARGIN=c(1,2), quantile, probs=0.025, na.rm=T)
+pred.up <- apply(pred.update, MARGIN=c(1,2), quantile, probs=0.975, na.rm=T)
+
+val.med <- apply(val.arr[,,1:biter], MARGIN=c(1,2), median, na.rm=T)
+
+par(mfrow=c(1,2)) 
+plot(val.med[,1],pred.med[,1],type="l",ylim=c(min(pred.lo[,2]),max(pred.up[,2])), lwd=2, ylab="(←lower) TA (higher→)", xlab="(←higher) E (lower→)")
+lines(val.med[,1], pred.lo[,1], type="l", lty=2, col="red")
+lines(val.med[,1], pred.up[,1], type="l", lty=2, col="red")
+
+plot(val.med[,2],pred.med[,2],type="l",ylim=c(min(pred.lo[,2]),max(pred.up[,2])), lwd=2, ylab="(←lower) TA (higher→)",  xlab="(←lower) N (higher→)" )
+lines(val.med[,2], pred.lo[,2], type="l", lty=2, col="red")
+lines(val.med[,2], pred.up[,2], type="l", lty=2, col="red")
+par(mfrow=c(1,1)) 
+
+# kappa method for output vectors
+D2.update <- D2.vec[1:biter]
+CV.cor.update <- CV.cor.vec[1:biter]
+CV.cor.se.update <- CV.cor.se.vec[1:biter]
+E.ri.update <- E.ri[1:biter]
+N.ri.update <- N.ri[1:biter]
+
+for (k in 1:kappa.n) {
+  D2.mean <- mean(D2.update, na.rm=T); D2.sd <- sd(D2.update, na.rm=T)
+  CV.cor.mean <- mean(CV.cor.update, na.rm=T); CV.cor.sd <- sd(CV.cor.update, na.rm=T)
+  CV.cor.se.mean <- mean(CV.cor.se.update, na.rm=T); CV.cor.se.sd <- sd(CV.cor.se.update, na.rm=T)
+  
+  E.mean <- mean(E.ri.update, na.rm=T); E.sd <- sd(E.ri.update, na.rm=T)
+  N.mean <- mean(N.ri.update, na.rm=T); N.sd <- sd(N.ri.update, na.rm=T)
+
+  for (u in 1:biter) {
+    D2.update[u] <- ifelse((D2.update[u] < (D2.mean-kappa*D2.sd) | D2.update[u] > (D2.mean+kappa*D2.sd)), NA, D2.update[u])
+    CV.cor.update[u] <- ifelse((CV.cor.update[u] < (CV.cor.mean-kappa*CV.cor.sd) | CV.cor.update[u] > (CV.cor.mean+kappa*CV.cor.sd)), NA, CV.cor.update[u])
+    CV.cor.se.update[u] <- ifelse((CV.cor.se.update[u] < (CV.cor.se.mean-kappa*CV.cor.se.sd) | CV.cor.se.update[u] > (CV.cor.se.mean+kappa*CV.cor.se.sd)), NA, CV.cor.se.update[u])
+    
+    E.ri.update[u] <- ifelse((E.ri.update[u] < (E.mean-kappa*E.sd) | E.ri.update[u] > (E.mean+kappa*E.sd)), NA, E.ri.update[u])
+    N.ri.update[u] <- ifelse((N.ri.update[u] < (N.mean-kappa*N.sd) | N.ri.update[u] > (N.mean+kappa*N.sd)), NA, N.ri.update[u])
+  }
+  
+  print(k)
+}
+
+D2.med <- median(D2.update, na.rm=TRUE)
+D2.lo <- quantile(D2.update, probs=0.025, na.rm=TRUE)
+D2.up <- quantile(D2.update, probs=0.975, na.rm=TRUE)
+print(c(D2.lo,D2.med,D2.up))
+
+CV.cor.med <- median(CV.cor.update, na.rm=TRUE)
+CV.cor.lo <- quantile(CV.cor.update, probs=0.025, na.rm=TRUE)
+CV.cor.up <- quantile(CV.cor.update, probs=0.975, na.rm=TRUE)
+print(c(CV.cor.lo,CV.cor.med,CV.cor.up))
+
+E.ri.lo <- quantile(E.ri.update, probs=0.025, na.rm=TRUE)
+E.ri.med <- median(E.ri.update, na.rm=TRUE)
+E.ri.up <- quantile(E.ri.update, probs=0.975, na.rm=TRUE)
+
+N.ri.lo <- quantile(N.ri.update, probs=0.025, na.rm=TRUE)
+N.ri.med <- median(N.ri.update, na.rm=TRUE)
+N.ri.up <- quantile(N.ri.update, probs=0.975, na.rm=TRUE)
+
+ri.lo <- c(E.ri.lo,N.ri.lo)
+ri.med <- c(E.ri.med,N.ri.med)
+ri.up <- c(E.ri.up,N.ri.up)
+
+ri.out <- as.data.frame(cbind(ri.lo,ri.med,ri.up))
+colnames(ri.out) <- c("ri.lo","ri.med","ri.up")
+rownames(ri.out) <- attr(TAconN, "names")[c(2:3)]
+ri.sort <- ri.out[order(ri.out[,2],decreasing=T),1:3]
+ri.sort
