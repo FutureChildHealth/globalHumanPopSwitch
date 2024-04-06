@@ -1,4 +1,4 @@
-![image](https://github.com/cjabradshaw/globalHumanPopSwitch/assets/26937238/10155bf2-c058-4a4c-873b-4e3c3cfe29c7)# Global human population ended self-facilitation in the 1950s
+# Global human population ended self-facilitation in the 1950s
 <img align="right" src="www/pop.png" alt="population icon" width="180" style="margin-top: 20px">
 
 The global human population switched from depensation to compensation in the 1950s
