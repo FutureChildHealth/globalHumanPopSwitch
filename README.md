@@ -1,5 +1,5 @@
 # Global human population ended self-facilitation in the 1950s
-<a href="https://zenodo.org/doi/10.5281/zenodo.10951676"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10951677.svg" alt="DOI"></a>
+<a href="https://zenodo.org/doi/10.5281/zenodo.10951676"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10951676.svg" alt="DOI"></a>
 <img align="right" src="www/pop.png" alt="population icon" width="180" style="margin-top: 20px">
 
 The global human population switched from depensation to compensation in the 1950s
