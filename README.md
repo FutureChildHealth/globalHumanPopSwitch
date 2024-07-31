@@ -13,7 +13,7 @@ February 2024 <br>
 
 Accompanies paper:<br>
 <br>
-<a href="https://globalecologyflinders.com/people/#DIRECTOR">Bradshaw, CJA</a>, <a href="https://www.researchgate.net/profile/Melinda-Judge">MA Judge</a>, <a href="https://blumsteinlab.eeb.ucla.edu/who-we-are/">DT Blumstein</a>, <a href="https://profiles.stanford.edu/paul-ehrlich?releaseVersion=10.8.0">PR Ehrlich</a>, <a href="https://www.linkedin.com/in/aisha-dasgupta-phd-911a4182/">ANZ Dasgupta</a>, <a href="https://www.linkedin.com/in/mathis-wackernagel-b4446a9/">M Wackernagel</a>, <a href="https://www.researchgate.net/profile/Lewis-Weeda">LJZ Weeda</a>, <a href="https://research-repository.uwa.edu.au/en/persons/peter-le-souef">PN Le Souëf</a>. Global human population ended self-facilitation in the 1950s. <em>One Earth</em> (in review)<br>
+<a href="https://globalecologyflinders.com/people/#DIRECTOR">Bradshaw, CJA</a>, <a href="https://www.researchgate.net/profile/Melinda-Judge">MA Judge</a>, <a href="https://blumsteinlab.eeb.ucla.edu/who-we-are/">DT Blumstein</a>, <a href="https://profiles.stanford.edu/paul-ehrlich?releaseVersion=10.8.0">PR Ehrlich</a>, <a href="https://www.linkedin.com/in/aisha-dasgupta-phd-911a4182/">ANZ Dasgupta</a>, <a href="https://www.linkedin.com/in/mathis-wackernagel-b4446a9/">M Wackernagel</a>, <a href="https://www.researchgate.net/profile/Lewis-Weeda">LJZ Weeda</a>, <a href="https://research-repository.uwa.edu.au/en/persons/peter-le-souef">PN Le Souëf</a>. Global human population ended self-facilitation in the 1950s. <em>Proceedings of the Royal Society B</em> (in review)<br>
 <br>
 Pre-print also available:<br>
 <br>
