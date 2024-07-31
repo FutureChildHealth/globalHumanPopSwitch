@@ -908,3 +908,29 @@ colnames(ri.out) <- c("ri.lo","ri.med","ri.up")
 rownames(ri.out) <- attr(TAconN, "names")[c(2:3)]
 ri.sort <- ri.out[order(ri.out[,2],decreasing=T),1:3]
 ri.sort
+
+
+############################################################################
+# age structure # UN Population Division (World Population Prospects 2022) #
+# both sexes population by single age (1950-2021)                          #
+############################################################################
+
+astruct <- read.csv("agestructure1950_2021.csv", header=T)
+head(astruct)
+
+totpop <- 1000*apply(astruct[,-1], MARGIN=1, sum, na.rm=T)
+age.vec <- seq(0.5,100.5,1)
+age.mn <- rep(NA,dim(astruct)[1])
+for (i in 1:dim(astruct)[1]) {
+  age.mn[i] <- sum((1000*astruct[i, 2:102]) * age.vec)/totpop[i]
+} # end a
+plot(astruct$year, age.mn, type="l", xlab="year", ylab="mean age (years)")
+plot(totpop, age.mn, type="l", ylab="mean age (years)", xlab="human population size")
+
+pl15 <- (1000*apply(astruct[,2:16], MARGIN=1, sum, na.rm=T))/totpop
+
+age.mn.out <- data.frame(astruct$year, totpop/10^9, age.mn, pl15)
+colnames(age.mn.out) <- c("year", "Ntot", "ageMN", "young")
+
+plot(age.mn.out$Ntot, age.mn.out$young, type="l", xlab="human population size", ylab="proportion < 15 years")
+age.mn.out$year[which(age.mn.out$young == max(age.mn.out$young))]
