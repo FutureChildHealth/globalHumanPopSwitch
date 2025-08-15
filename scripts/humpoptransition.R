@@ -1,7 +1,7 @@
 ## Global human population ended self-facilitation in the 1950s
 ## Corey Bradshaw
 ## Flinders University 
-## February 2024
+## February 2024 / updated August 2025
 
 # required R libraries
 library(plotrix)
@@ -934,3 +934,66 @@ colnames(age.mn.out) <- c("year", "Ntot", "ageMN", "young")
 
 plot(age.mn.out$Ntot, age.mn.out$young, type="l", xlab="human population size", ylab="proportion < 15 years")
 age.mn.out$year[which(age.mn.out$young == max(age.mn.out$young))]
+
+
+###################################################
+## assume different errors on population estimates
+###################################################
+head(popdat)
+
+popPhase1 <- subset(popdat, year >= 1800 & year < 1950)
+popPhase2 <- subset(popdat, year >= 1950 & year < 1962)
+popPhase3 <- subset(popdat, year >= 1962)
+
+## set uncertainties
+pcUncertPhase1 <- 0.05 # 5% uncertainty
+pcUncertPhase2 <- 0.02 # 2% uncertainty
+pcUncertPhase3 <- 0.01 # 1% uncertainty
+
+# calculate stochastic time series of r based on phase-specific certainties & estimate slope of
+# relationship between r and Nt
+iter <- 10000
+Phase1rN.slope <- Phase2rN.slope <- Phase3rN.slope <- Phase3K <- rep(NA, iter)
+for (i in 1:iter) {
+  # Phase 1: facilitation
+  Phase1pop.rsmp <- runif(length(popPhase1$pop), min = popPhase1$pop - (popPhase1$pop * pcUncertPhase1),
+        max = popPhase1$pop + (popPhase1$pop * pcUncertPhase1))
+  Phase1r.rsmp <- c(NA, log(Phase1pop.rsmp[2:length(Phase1pop.rsmp)] / Phase1pop.rsmp[1:(length(Phase1pop.rsmp)-1)]))
+  Phase1rN.fit <- lm(Phase1r.rsmp ~ Phase1pop.rsmp)  
+  #summary(Phase1rN.fit)
+  Phase1rN.slope[i] <- as.numeric(coef(Phase1rN.fit)[2])
+  
+  # Phase 2: transition
+  Phase2pop.rsmp <- runif(length(popPhase2$pop), min = popPhase2$pop - (popPhase2$pop * pcUncertPhase2),
+                          max = popPhase2$pop + (popPhase2$pop * pcUncertPhase2))
+  Phase2r.rsmp <- c(NA, log(Phase2pop.rsmp[2:length(Phase2pop.rsmp)] / Phase2pop.rsmp[1:(length(Phase2pop.rsmp)-1)]))
+  Phase2rN.fit <- lm(Phase2r.rsmp ~ Phase2pop.rsmp)  
+  #summary(Phase2rN.fit)
+  Phase2rN.slope[i] <- as.numeric(coef(Phase2rN.fit)[2])
+  
+  # Phase 3: negative
+  Phase3pop.rsmp <- runif(length(popPhase3$pop), min = popPhase3$pop - (popPhase3$pop * pcUncertPhase3),
+                          max = popPhase3$pop + (popPhase3$pop * pcUncertPhase3))
+  Phase3r.rsmp <- c(NA, log(Phase3pop.rsmp[2:length(Phase3pop.rsmp)] / Phase3pop.rsmp[1:(length(Phase3pop.rsmp)-1)]))
+  Phase3rN.fit <- lm(Phase3r.rsmp ~ Phase3pop.rsmp)
+  #summary(Phase3rN.fit)
+  Phase3rN.slope[i] <- as.numeric(coef(Phase3rN.fit)[2])
+  Phase3K[i] <- as.numeric(-coef(Phase3rN.fit)[1]/coef(Phase3rN.fit)[2]) / 10^9
+  
+}
+
+# calculate 95% confidence intervals
+Phase1rN.slope.lo <- quantile(Phase1rN.slope, probs=0.025, na.rm=T)
+Phase1rN.slope.up <- quantile(Phase1rN.slope, probs=0.975, na.rm=T)
+Phase2rN.slope.lo <- quantile(Phase2rN.slope, probs=0.025, na.rm=T)
+Phase2rN.slope.up <- quantile(Phase2rN.slope, probs=0.975, na.rm=T)
+Phase3rN.slope.lo <- quantile(Phase3rN.slope, probs=0.025, na.rm=T)
+Phase3rN.slope.up <- quantile(Phase3rN.slope, probs=0.975, na.rm=T)
+
+print(c(Phase1rN.slope.lo, Phase1rN.slope.up))
+print(c(Phase2rN.slope.lo, Phase2rN.slope.up))
+print(c(Phase3rN.slope.lo, Phase3rN.slope.up))
+
+Phase3rN.K.lo <- quantile(Phase3K, probs=0.025, na.rm=T)
+Phase3rN.K.up <- quantile(Phase3K, probs=0.975, na.rm=T)
+print(c(Phase3rN.K.lo, Phase3rN.K.up))
