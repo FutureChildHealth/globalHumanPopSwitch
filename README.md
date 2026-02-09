@@ -38,7 +38,7 @@ The ecological concept of human carrying capacity is necessarily complicated bec
 - <em>COD.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Republic of Congo</a>
 - <em>consump.csv</em>: <a href="https://www.energyinst.org/statistical-review/home">global consumption data</a>, <a href="https://ourworldindata.org/co2-and-greenhouse-gas-emissions">global emissions data</a>, and <a href="http://footprintnetwork.org">global ecological footprint data</a>
 - <em>continent.country2.csv</em>: country-region categories
-- <em>demog.csv/<em>: regional demographic time series (<a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data</a>)
+- <em>demog.csv</em>: regional demographic time series (<a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data</a>)
 - <em>gdppcPPP.csv/<em>: purchasing power parity-corrected gross domestic product per country time series (<a href="https://data.worldbank.org">World Bank data</a>)
 - <em>GMB.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Gambia</a>
 - <em>MLI.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Mali</a>
