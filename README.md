@@ -25,7 +25,7 @@ The ecological concept of human carrying capacity is necessarily complicated bec
 
 
 ## Scripts
-- <code>humanpoptransition.R</code> (main code)
+- <code>humanpoptransitionR1.R</code> (main code)
 - <code>new_lmer_AIC_tables3.R</code> (source functions)
 - <code>r.squared.R</code> (source functions)
 
