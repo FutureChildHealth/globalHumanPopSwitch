@@ -34,9 +34,12 @@ The ecological concept of human carrying capacity is necessarily complicated bec
 - <em>AGO.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Angola</a>
 - <em>BDI.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Burundi</a>
 - <em>BFA.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Burkina Faso</a>
-- <em>china1950-2021.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for China</a>
+- <em>china1950-2023.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for China</a>
 - <em>COD.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Republic of Congo</a>
-- <em>consump.csv</em>: <a href="[https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1](https://www.energyinst.org/statistical-review/resources-and-data-downloads)">global consumption data</a>
+- <em>consump.csv</em>: <a href="https://www.energyinst.org/statistical-review/home">global consumption data</a>, <a href="https://ourworldindata.org/co2-and-greenhouse-gas-emissions">global emissions data</a>, and <a href="http://footprintnetwork.org">global ecological footprint data</a>
+- <em>continent.country2.csv</em>: country-region categories
+- <em>demog.csv/<em>: regional demographic time series (<a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data</a>)
+- <em>gdppcPPP.csv/<em>: purchasing power parity-corrected gross domestic product per country time series (<a href="https://data.worldbank.org">World Bank data</a>)
 - <em>GMB.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Gambia</a>
 - <em>MLI.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Mali</a>
 - <em>Nchild-01.csv</em>: number of children aged 0-1 years from 1950-2021 (United Nations Population Division)
