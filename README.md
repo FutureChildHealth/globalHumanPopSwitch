@@ -1,4 +1,4 @@
-# Global human population ended self-facilitation in the 1950s
+# Earth has surpassed its sustainable human carrying capacity
 <a href="https://zenodo.org/doi/10.5281/zenodo.10951676"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.10951676.svg" alt="DOI"></a>
 <img align="right" src="www/pop.png" alt="population icon" width="180" style="margin-top: 20px">
 
@@ -14,9 +14,13 @@ February 2024 <br>
 Accompanies preprint:<br>
 <br>
 Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, LJZ Weeda, PN Le Souëf. <a href="https://doi.org/10.2139/ssrn.4788003">Global human population ended self-facilitation in the 1950s</a>. <em>SSRN</em> doi:10.2139/ssrn.4788003
+<br>
+and paper in review<br>
+Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, LJZ Weeda, PN Le Souëf. <a href="https://doi.org/">Earth has surpassed its sustainable human carrying capacity</a>. <em>Environmental Research Letters</em> In review
 
 ## Abstract
-Applied to human populations, the ecological concept of carrying capacity is necessarily complicated because human beings are the “ultimate ecosystem engineers” who deliberately and successfully moderate their environment for their benefit. For at least that last few hundred years, human ingenuity, access to massive stocks of fossil fuels, and technological development have driven facilitation whereby increasing human abundance promoted higher population growth rates. However, this positive relationship broke down during the 1950s, and by 1962, the global human population entered a negative phase where the growth rate consistently declined as population increased. The onset of the negative phase was approximately contemporaneous with a global biocapacity deficit that began in 1970 and has increased ever since. The onset of the negative phase varies regionally, with the lowest-income regions entering this phase later than higher-income regions. A Ricker logistic model fitted to the negative phase predicts that the global population could reach 11.6 to 12.3 billion people between 2065 and 2074. The same model fitted to the facilitation phase predicts a maximum sustainable population of 2.5 billion people that Earth’s carrying capacity might be able to maintain over a longer time period. This is in line with economics-based estimates of equitable wealth distribution (3.3 billion people) and an ecological footprint of 0.5 planets (2.35 billion people). The negative phase also correlates strongly with the trend in global temperature anomaly. The Earth cannot sustain the future human population, or even today’s, without a major overhaul of socio-cultural practices for using land, water, energy, biodiversity, and other resources. Sustainable development therefore continues to face the challenge of meeting the needs and aspirations of current societies while simultaneously ensuring that future generations can meet their own.
+The ecological concept of human carrying capacity is necessarily complicated because human beings are the “ultimate ecosystem engineers” who moderate the environment for their benefit. For at least the last few hundred years, human ingenuity, access to massive stocks of fossil fuels, and technological development have driven facilitation whereby increasing human abundance has promoted higher population growth rates. However, this positive relationship broke down during the 1950s, and by 1962, the global human population entered a phase where the growth rate consistently declined as population increased. The onset of this negative phase occurred 8 years before a global biocapacity deficit began in 1970. The onset of the negative phase also varies regionally, with the lowest-income and highest fertility regions entering this phase later than higher-income regions. A Ricker logistic model fitted to the negative phase predicts that the global population could reach 11.7 to 12.4 billion people between 2067 and 2076. The same model fitted to the facilitation phase predicts a maximum population of 2.5 billion people that Earth might be able to maintain. The negative phase also correlates strongly with the trend in global temperature anomaly, ecological footprint, and total emissions, with more of its variation explained by increasing population size rather than increasing per-capita consumption. The Earth cannot sustain the future human population, or even today’s, without a major overhaul of socio-cultural practices for using land, water, energy, biodiversity, and other resources.
+
 
 ## Scripts
 - <code>humanpoptransition.R</code> (main code)
@@ -45,7 +49,7 @@ Applied to human populations, the ecological concept of carrying capacity is nec
 - <em>worldpophist.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">historical United Nations Population Division data</a>
 
 ## R libraries
-<code>plotrix</code>, <code>boot</code>, <code>tmvnsim</code>, <code>wCorr</code>, <code>truncnorm</code>, <code>orcutt</code>, <code>lmtest</code>, <code>performance</code>, <code>sjPlot</code>, <code>dismo</code>, <code>gbm</code>
+<code>boot</code>, <code>dismo</code>, <code>gbm</code>, <code>ggplot2</code>, <code>gridExtra</code>, <code>lmtest</code>,<code>performance</code>, <code>plotrix</code>, <code>sjPlot</code>, <code>tmvnsim</code>,<code>truncnorm</code>, <code>wCorr</code>
 <br>
 <br>
 
