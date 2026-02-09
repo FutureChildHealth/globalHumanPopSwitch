@@ -15,7 +15,9 @@ Accompanies preprint:<br>
 <br>
 Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, LJZ Weeda, PN Le Souëf. <a href="https://doi.org/10.2139/ssrn.4788003">Global human population ended self-facilitation in the 1950s</a>. <em>SSRN</em> doi:10.2139/ssrn.4788003
 <br>
+<br>
 and paper in review<br>
+<br>
 Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, LJZ Weeda, PN Le Souëf. <a href="https://doi.org/">Earth has surpassed its sustainable human carrying capacity</a>. <em>Environmental Research Letters</em> In review
 
 ## Abstract
