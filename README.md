@@ -24,12 +24,12 @@ Bradshaw, CJA, MA Judge, DT Blumstein, PR Ehrlich, ANZ Dasgupta, M Wackernagel, 
 The ecological concept of human carrying capacity is necessarily complicated because human beings are the “ultimate ecosystem engineers” who moderate the environment for their benefit. For at least the last few hundred years, human ingenuity, access to massive stocks of fossil fuels, and technological development have driven facilitation whereby increasing human abundance has promoted higher population growth rates. However, this positive relationship broke down during the 1950s, and by 1962, the global human population entered a phase where the growth rate consistently declined as population increased. The onset of this negative phase occurred 8 years before a global biocapacity deficit began in 1970. The onset of the negative phase also varies regionally, with the lowest-income and highest fertility regions entering this phase later than higher-income regions. A Ricker logistic model fitted to the negative phase predicts that the global population could reach 11.7 to 12.4 billion people between 2067 and 2076. The same model fitted to the facilitation phase predicts a maximum population of 2.5 billion people that Earth might be able to maintain. The negative phase also correlates strongly with the trend in global temperature anomaly, ecological footprint, and total emissions, with more of its variation explained by increasing population size rather than increasing per-capita consumption. The Earth cannot sustain the future human population, or even today’s, without a major overhaul of socio-cultural practices for using land, water, energy, biodiversity, and other resources.
 
 
-## Scripts
+## <a href="https://github.com/cjabradshaw/globalHumanPopSwitch/tree/main/scripts">Scripts</a>
 - <code>humanpoptransitionR1.R</code> (main code)
 - <code>new_lmer_AIC_tables3.R</code> (source functions)
 - <code>r.squared.R</code> (source functions)
 
-## <a href="https://github.com/cjabradshaw/globalHumanPopSwitch"</a>Data
+## <a href="https://github.com/cjabradshaw/globalHumanPopSwitch/tree/main/data">Data</a>
 - <em>agestructure1950_2021.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division age structure data from 1950-2021</a>
 - <em>AGO.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Angola</a>
 - <em>BDI.csv</em>: <a href="https://data.un.org/Data.aspx?d=POP&f=tableCode%3a1">United Nations Population Division data for Burundi</a>
